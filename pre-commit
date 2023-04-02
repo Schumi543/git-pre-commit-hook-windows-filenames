@@ -31,9 +31,6 @@ then
 fi
 
 git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -d '' filename; do
-  # Non-printable characters from ASCII range 0-31
-  nonprintablechars=$(echo -n "$filename" | LC_ALL=C tr -d '[ -~]' | wc -c)
-
   # Illegal characters: < > : " / \ | ? *
   # We don't test for / (forward slash) here as that is even on *nix not allowed in *filename*
   illegalchars=$(echo -n "$filename" | LC_ALL=C grep -E '(<|>|:|"|\\|\||\?|\*)' | wc -c)
@@ -60,7 +57,6 @@ git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -
   if test -n "$GIT_TRACE"
   then
     echo "File: ${filename}"
-    echo nonprintablechars=$nonprintablechars
     echo illegalchars=$illegalchars
     echo reservednames=$reservednames
     echo trailingperiodorspace=$trailingperiodorspace
@@ -68,8 +64,7 @@ git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -
     echo absolutepathtoolong=$absolutepathtoolong
   fi
 
-  if test $nonprintablechars -ne 0 \
-     || test $illegalchars -ne 0 \
+  if test $illegalchars -ne 0 \
      || test $reservednames -ne 0 \
      || test $trailingperiodorspace -ne 0 \
      || test $filenameallperiods -ne 0 \

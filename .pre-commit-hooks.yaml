@@ -1,0 +1,4 @@
+- id: check-windows-compatible-filenames
+  name: "check windows compatible filenames"
+  entry: pre-commit
+  language: script

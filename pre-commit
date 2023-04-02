@@ -31,7 +31,7 @@ then
 fi
 
 git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -d '' filename; do
-  # Non-printable characters from ASCII range 0-31 
+  # Non-printable characters from ASCII range 0-31
   nonprintablechars=$(echo -n "$filename" | LC_ALL=C tr -d '[ -~]' | wc -c)
 
   # Illegal characters: < > : " / \ | ? *
@@ -49,7 +49,7 @@ git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -
   filenameallperiods=$(echo -n "$filename" | LC_ALL=C grep -E '^\.+$' | wc -c)
 
   # Check complete path length to be smaller than 260 characters
-  # This test can not be really accurate as we don't know if PWD on the windows filesystem itself is not very long 
+  # This test can not be really accurate as we don't know if PWD on the windows filesystem itself is not very long
   absolutepathtoolong=0
   if test $(echo "$filename" | wc -c) -ge 260
   then
@@ -75,13 +75,13 @@ git diff --cached --name-only --diff-filter=A -z $against | while IFS= read -r -
      || test $filenameallperiods -ne 0 \
      || test $absolutepathtoolong -ne 0
   then
-    echo "Error: Attempt to add a file name which is incompatible to windows file systems."
-    echo
-    echo "If you know what you are doing you can disable this"
-    echo "check using:"
-    echo
-    echo "git config hooks.enforcecompatiblefilenames false"
-    echo
+cat <<EOF
+Error: Attempt to add a file name '${filename}' which is incompatible with Windows file systems.
+
+If you know what you are doing, you can disable this check using:
+
+git config hooks.enforcecompatiblefilenames false
+EOF
     exit 1
   fi
 done
